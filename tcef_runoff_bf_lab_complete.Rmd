@@ -68,7 +68,6 @@ In this lab you will use precipitation and runoff data from Tenderfoot Creek (TC
 ### Load the data with `read_csv()`.
 
 ```{r}
-rm(list = ls()) # this clears out the Environment ("fresh start!")
 df <- read_csv("PQdata.csv") # read in data
 view(df)
 str(df)

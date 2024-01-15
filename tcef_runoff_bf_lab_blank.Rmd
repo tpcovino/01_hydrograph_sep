@@ -71,7 +71,6 @@ In this lab you will use precipitation and runoff data from Tenderfoot Creek (TC
 
 
 
-
 ```
 
 Look at the df. "LSC", "BUB", and "UTC" are watersheds in the TCEF. "P" is precipitation (snowmelt and rain), "Q" is streamflow. The date column is actually a character and not formatted as a date. We first need to make sure that the "Date" column has the proper format. Use the `lubridate` package and the appropriate function to modify the "Date" column with `mutate()`.
