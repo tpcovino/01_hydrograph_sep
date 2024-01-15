@@ -8,7 +8,11 @@ output:
 ---
 # Lab 1 - Flow analysis and hydrograph separation (20 pts)
 
-## Reading
+## Intro
+
+In this lab we will analyze stream flow (Q) and precipitation (P) data from Tenderfoot Creek Experimental Forest (TCEF). TCEF is located in central Montana, north of White Sulphur Springs. [See here](https://www.fs.usda.gov/research/rmrs/forestsandranges/locations/tcef){target="_blank"} for information about TCEF. You will do some data analysis on flows, calculate annual runoff ratios, and perform a hydrograph separation. 
+
+## Reading for this lab
 
 Ladson, A. R., R. Brown, B. Neal and R. Nathan (2013) A standard approach to baseflow separation using the Lyne and Hollick filter. Australian Journal of Water Resources 17(1): 173-18
 
@@ -18,9 +22,19 @@ Lynne, V., Hollick, M. (1979) Stochastic time-variable rainfall-runoff modelling
 
 + [Lyne and Hollick, 1979](https://www.dropbox.com/scl/fi/vzuy13znsou4m149e0xkx/Stochastic_Time-Variable_Rainfall-Runoff.pdf?rlkey=rztj4c1nd3xhy765eac7mav5j&dl=0){target="_blank"}
 
-## Intro
+## Repo
 
-In this lab we will analyze stream flow data from Tenderfoot Creek Experimental Forest (TCEF). TCEF is located in central Montana, north of White Sulphur Springs. [See here](https://www.fs.usda.gov/research/rmrs/forestsandranges/locations/tcef) for information about TCEF.  
+Follow this [link](https://github.com/tpcovino/01_hydrograph_sep){target="_blank"} to download everything you need for this unit. When you get to GitHub click on "Code" (green button) and select "download zip". You will then save this to a local folder where you should do all of your work for this class. You will work through the "_blank.Rmd". Always be sure to read the README.md files in the GitHub repo. Sometimes they are useful, sometimes they aren't, but always have a look. 
+
+As I mentioned above you will work through the "_blank.Rmd". However, there is also a "_complete.Rmd" in the repo. This has all the code. So you can use it as a cheat sheet, but if you want to learn how to code in R, I encourage you to work through the blank version as much as possible. Also, if you don't have much R background this lab might seem kind of challenging. But don't worry. I'm challenging you right now, but I'm going to post videos explaining how I would code this and walk you through everything. So don't get frustrated if this seems tough right now. Soon you will be rattling off code with ease. Conversely, if you are an experienced coder and have ideas for how to do this in ways other than what I've shown here, please share code with your colleagues and help them develop their coding skills! 
+
+OK. Once you have this folder saved where you would like it, open RStudio and navigate to the folder. Next, open the project (".Rproj"). Doing so will set the folder as the working directory, make your life easier, and make everything generally work. The use of projects is highly recommended and is the practice we will follow in this class. See [here](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/) for an overview of projects and why you should use them from Jenny Bryan. 
+
+If you are new to R, or need a refresher, please read [Chapters 1, 2, & 3](https://r4ds.had.co.nz/introduction.html){target="_blank"} 1-Welcome, 2-Introduction, & 3-Data visualization in R for Data Science (RDS).
+
+In this unit we want to start familiarizing ourselves with R by visualizing some hydrological data.
+
+## Knitr
 
 This is knitr settings. Knitr is a package that will turn this Rmd to an html. 
 ```{r}
@@ -69,7 +83,7 @@ str(df)
 view(df)
 ```
 
-In hydrology, we use the water year instead of the calendar year. As a reminder, the water year begins October 1 and ends September 30 the following year. So, 2014-10-01 through 2015-09-30 is the 2015 WY. Add an additional column to the large df that contains just a number for the water year. Use `if_else()` for this. It works like this: if_else(If some condition is met, do this, otherwise do this). 
+In hydrology, we use the water year (WY) instead of the calendar year. As a reminder, the WY begins October 1 and ends September 30 the following year. So, 2014-10-01 through 2015-09-30 is the 2015 WY. Add an additional column to the large df that contains just a number for the water year. Use `if_else()` for this. It works like this: if_else(If some condition is met, do this, otherwise do this). 
 
 Look at the following example to understand the `if_else()` function.
 ```{r}
@@ -94,7 +108,14 @@ view(df)
 **2) (2 pts) Why is it important (especially in the western US) to use the water year instead of the calendar year for hydrologic analysis? Some places in the east use a May-April water year instead. Why do you think that is?**   
 ANSWER:
 
-Let's plot some raw data. How would you plot Q for the three watersheds to do some exploratory data analysis (EDA)? **Note:** EDA should always be your first step after loading some data.  
+Let's plot some raw data. How would you plot Q for the three watersheds to do some exploratory data analysis (EDA)? **Note:** EDA should always be your first step after loading some data. 
+
+I, personally, use ggplot for this. Plotting with ggplot looks something like:
+
+ggplot(data = df, aes(x = x, y = y)) + 
+geom_point()
+
+And other commands. See [here](https://ggplot2.tidyverse.org/) for documentation on ggplot. 
 
 ```{r}
 
@@ -107,7 +128,12 @@ df %>%
 
 ```
 
-First, make a data frame called df_2004 with only data from WY 2004. Have a look at the data. 
+Because we have made a year column using "mutate" we can filter for only the 2004 WY. That would look something like:
+
+df_2004 <- df %>% 
+filter(year == 2004)
+
+First, make a data frame called df_2004 with only data from WY 2004. Have a look at the data.
 
 ```{r}
 df_2004 <- df %>% 
@@ -144,6 +170,7 @@ PQ <- df %>%
 ```
 
 ### Daily Q plot
+
 Plot the daily Q time series for the three watersheds with "Date" on the x axis and "Q" on the y axis. Use `color = ` to distinguish between the three watersheds. Also label the y-axis appropriatly as "Q (mm/day)". Feel free to to change other default settings to make the graph look nicer, too. Use `scale_x_date()` to place the ticks and labels every two years. We haven't looked at this yet, so you might have to do some googling.
 
 ```{r}
@@ -157,6 +184,7 @@ ggplotly(q_plot)
 ```
 
 ### Annual stats
+
 Calculate annual total P, Q, ET, and RR (runoff ratios) for all three watersheds. The grouping needs to be done both on the Watershed AND WY. Use `summarise()` to calculate the values. Also change the watershed names from characters to factors using as_factor. See [here](https://forcats.tidyverse.org/reference/as_factor.html). 
 
 In addition to summarise this operation can also be accomplished with reframe. See [here](https://dplyr.tidyverse.org/reference/reframe.html) for information on reframe.
@@ -171,6 +199,7 @@ PQ_annual <- PQ %>%
 ```
 
 ### Annual RR plot
+
 Plot the annual runoff ratios for the three watersheds with the confidence bands in the same color as the line.
 ```{r}
 ggplot(data = PQ_annual, aes(x = WY, y = RR, color = Watershed, fill = Watershed)) +
@@ -195,7 +224,15 @@ ANSWER:
 
 ## Hydrograph separation - Part B
 ### Full timeseries
-We will use an existing R package to perform a hydrograph separation. First we need to get the data in shape. Let's remove the precipitation data and the water year column using `select()`, we only want the Date and Q for all three watersheds. Then, with `pivot_wider()`, turn the df from long into wide format by spreading out the Q data for each watershed. We want the df to have 4 columns: Date, BUB, LSC, UTC, with the last three columns being the runoff for the respective watershed. `pivot_wider()` has similar syntax to `pivot_longer()`, but here the important parts are `names_from =` and `values_from =`. In this case, the names come from the Watershed column (which is now a factor), the values come from the Q column.
+
+We will use an existing R package to perform a hydrograph separation. First we need to get the data in shape. Let's remove the precipitation data and the water year column using `select()`, we only want the Date and Q for all three watersheds. Then, with `pivot_wider()`, turn the df from long into wide format by spreading out the Q data for each watershed. We want the df to have 4 columns: Date, BUB, LSC, UTC, with the last three columns being the runoff for the respective watershed. 
+
+Note BUB, LSC, and UTC are watersheds in TCEF. These are Bubbling (BUB), Lower Stringer Creek (LSC), and Upper Tenderfoot Creek (UTC).
+
+`pivot_wider()` has similar syntax to `pivot_longer()`, but here the important parts are `names_from =` and `values_from =`. In this case, the names come from the Watershed column (which is now a factor), the values come from the Q column.
+
+Use pivot_wider() to make a df called Qdat that has date and Q for each watershed in the so-called "wide" format. See [here](https://r4ds.had.co.nz/tidy-data.html) and [here](https://anvil.works/blog/tidy-data) for information on wide vs long data formats. Note that the second link is a Python article. So we aren't using those packages and we won't in this class. But point being "long" vs. "wide" is relevant in all the programming languages, including Python and R.
+
 ```{r}
 Qdat <- PQ %>% 
   select(-P, -WY) %>% 
@@ -230,7 +267,7 @@ for (i in 1:3) { # for all three watersheds
 
 # make a clean looking df with all results from the baseflow separations
 HS_summary <- HS_summary %>% 
-  mutate(mean.qfi = 1 - mean.bfi) %>% # this add a value for quickflow (stormflow) percentage (1 - baseflow)
+  mutate(mean.qfi = 1 - mean.bfi) %>% # this adds a value for quickflow (stormflow) percentage (1 - baseflow)
   rename(Watershed = value)
 
 
@@ -317,7 +354,8 @@ Now, let's get to the correlations. We have just looked at the relationships bet
 
 We will use the R base function `cor.test()` to calculate the correlations. We will use `method = "spearman"` within `cor.test()`. "Spearman" is a rank-based (non-parametric) correlation coefficient and does not assume a normal distribution for the data.  
 
-The `cor.test()` does not work well with the tidyverse functions. We first need to get the data into a wide form. 
+The `cor.test()` does not work well with the tidyverse functions. We first need to get the data into a wide form.
+
 ```{r}
 PQ_wide <- PQ_all %>% 
   select(-Qsum, -Psum) %>% # remove the columns with Q, P, and ET
