@@ -26,7 +26,7 @@ Lynne, V., Hollick, M. (1979) Stochastic time-variable rainfall-runoff modelling
 
 Follow this [link](https://github.com/tpcovino/01_hydrograph_sep){target="_blank"} to download everything you need for this unit. When you get to GitHub click on "Code" (green button) and select "download zip". You will then save this to a local folder where you should do all of your work for this class. You will work through the "_blank.Rmd" or "_partial.Rmd". Always be sure to read the README.md files in the GitHub repo. Sometimes they are useful, sometimes they aren't, but always have a look. 
 
-As I mentioned above you will work through the "_blank.Rmd" or "_partial.Rmd". However, there is also a "_complete.Rmd" in the repo. This has all the code. So you can use it as a cheat sheet, but if you want to learn how to code in R, I encourage you to work through the blank or partial version as much as possible. Also, if you don't have much R background this lab might seem kind of challenging. But don't worry. I'm challenging you right now, but I'm going to post videos explaining how I would code this and walk you through everything. So don't get frustrated if this seems tough right now. Soon you will be rattling off code with ease. Conversely, if you are an experienced coder and have ideas for how to do this in ways other than what I've shown here, please share code with your colleagues and help them develop their coding skills! 
+As I mentioned above you will work through the "_blank.Rmd" or "_partial.Rmd". However, there is also a "_complete.Rmd" in the repo. This has all the code. So you can use it as a cheat sheet, but if you want to learn how to code in R, I encourage you to work through the blank version as much as possible. Also, if you don't have much R background this lab might seem kind of challenging. But don't worry. I'm challenging you right now, but I'm going to post videos explaining how I would code this and walk you through everything. So don't get frustrated if this seems tough right now. Soon you will be rattling off code with ease. Conversely, if you are an experienced coder and have ideas for how to do this in ways other than what I've shown here, please share code with your colleagues and help them develop their coding skills! 
 
 OK. Once you have this folder saved where you would like it, open RStudio and navigate to the folder. Next, open the project (".Rproj"). Doing so will set the folder as the working directory, make your life easier, and make everything generally work. The use of projects is highly recommended and is the practice we will follow in this class. See [here](https://www.tidyverse.org/blog/2017/12/workflow-vs-script/) for an overview of projects and why you should use them from Jenny Bryan. 
 
@@ -56,8 +56,8 @@ The second package below (lubridate) actually loads with the Tidyverse, but I wa
 
 ```{r setup, include = FALSE}
 library(tidyverse)
-library(lubridate)
-library(hydrostats) # used for hydrograph separation
+library(lubridate) # loads with tidyverse, don't actually need this line
+library(hydrostats) # used for hydrograph separation.
 library(plotly) # used as an extension to ggplot that makes plots interactive
 ```
 
@@ -68,7 +68,8 @@ In this lab you will use precipitation and runoff data from Tenderfoot Creek (TC
 ### Load the data with `read_csv()`.
 
 ```{r}
-df <- read_csv("PQdata.csv") # read in data
+rm(list = ls()) # this clears out the Environment ("fresh start!")
+df <- BLANK("PQdata.csv") # read in data
 view(df)
 str(df)
 ```
@@ -89,7 +90,6 @@ Look at the following example to understand the `if_else()` function.
 testvector <- c(1,2,5,8,3,6,9,0,3,1,5,7,6,9,1,0)
 new_testvector <- if_else(testvector >= 5, 10, 0)
 new_testvector
-
 ```
 
 **1) (1 pt) What happened here?**  
@@ -99,7 +99,7 @@ Now use `if_else()` to create a water year column. The easiest way is to look at
 
 ```{r}
 df <- df %>% 
-  mutate(WY = if_else(month(Date) > 9, year(Date) + 1, year(Date))) %>% # this adds a column that contains the water year
+  mutate(WY = BLANK(month(BLANK) > 9, year(Date) + 1, year(Date))) %>% # this adds a column that contains the water year
   relocate(WY, .after = Date)
 view(df)
 ```
@@ -117,14 +117,12 @@ geom_point()
 And other commands. See [here](https://ggplot2.tidyverse.org/) for documentation on ggplot. 
 
 ```{r}
-
 df %>% 
-  ggplot(aes(x = Date)) +
+  ggplot(aes(x = BLANK)) +
   geom_line(aes(y = LSC_Q, color = "LSC")) + 
-  geom_line(aes(y = BUB_Q, color = "BUB")) + 
+  geom_line(aes(y = BLANK, color = "BUB")) + 
   geom_line(aes(y = UTC_Q, color = "UTC")) +
   labs(color = "Watershed", y = "Q (mm/hr)", x = "")
-
 ```
 
 Because we have made a year column using "mutate" we can filter for only the 2004 WY. That would look something like:
@@ -132,21 +130,18 @@ Because we have made a year column using "mutate" we can filter for only the 200
 df_2004 <- df %>% 
 filter(year == 2004)
 
-First, make a data frame called df_2004 with only data from WY 2004. Have a look at the data.
+First, make a data frame called df_2004 with only data from WY 2004. Have a look at the data. 
 
 ```{r}
-df_2004 <- df %>% 
-  filter(WY == 2004)
+
 
 ```
 
 OK - so the data for the 2004 WY is missing, so let's remove it from the time series. We'll also remove the 2011 data because of potential measurement errors in one of the watersheds. `drop_na()` removes all rows that contain NAs (that will get rid of 2004). In this case `drop_na()` does not require any other inputs in the parentheses. Use `filter()` to get rid of the 2011 water year. `filter()` works by selecting rows to keep. So, to get rid of one particular year, you effectively have to select all other years. However, this can be simplified by saying "keep all water years that are NOT 2011". The operator for "not equal to" in R is `!=`. If you wanted to choose specific years to keep, you could do this with the `==` operator ("exactly equal to"). Note: You could also use `filter()` to remove the 2004 WY, but with `drop_na()` you learned another function.
 
 ```{r}
-df <- df %>% 
-  drop_na() %>% 
-  filter(WY != 2011)
-df
+df_BLANK<- df %>% 
+BLANK(year == BLANK)
 ```
 
 **3) (2 pt) What would the `filter()` code look like if you wanted to choose only WYs 2000 and 2008? What is the difference in R between NA and NaN?**    
@@ -173,13 +168,15 @@ PQ <- df %>%
 Plot the daily Q time series for the three watersheds with "Date" on the x axis and "Q" on the y axis. Use `color = ` to distinguish between the three watersheds. Also label the y-axis appropriately as "Q (mm/day)". Feel free to to change other default settings to make the graph look nicer, too. Use `scale_x_date()` to place the ticks and labels every two years. We haven't looked at this yet, so you might have to do some googling.
 
 ```{r}
+
 q_plot <- ggplot() +
-  geom_line(data = PQ, aes(x = Date, y = Q, color = Watershed)) +
+  geom_line(data = PQ, aes(x = Date, y = Q, color = BLANK)) +
   labs(y = "Q (mm/day)") +
-  scale_x_date(date_breaks = "2 years", date_labels = "%Y") +
+  BLANK(date_breaks = "2 years", date_labels = "%Y") +
   scale_color_viridis_d()
 
-ggplotly(q_plot)
+ggplotly(BLANK)
+
 ```
 
 ### Annual stats
@@ -189,9 +186,10 @@ Calculate annual total P, Q, ET, and RR (runoff ratios) for all three watersheds
 In addition to summarise this operation can also be accomplished with reframe. See [here](https://dplyr.tidyverse.org/reference/reframe.html) for information on reframe.
 
 ```{r}
+
 PQ_annual <- PQ %>%
   group_by(Watershed, WY) %>% 
-  reframe(Qsum = sum(Q), Psum = sum(P), RR = Qsum/Psum) %>% 
+  BLANK(Qsum = sum(Q), Psum = sum(BLANK), RR = Qsum/Psum) %>% 
   ungroup() %>% 
   mutate(Watershed = as_factor(Watershed))
 
@@ -201,10 +199,11 @@ PQ_annual <- PQ %>%
 
 Plot the annual runoff ratios for the three watersheds with the confidence bands in the same color as the line.
 ```{r}
+
 ggplot(data = PQ_annual, aes(x = WY, y = RR, color = Watershed, fill = Watershed)) +
   theme_bw(base_size = 15) +
   geom_point() +
-  geom_smooth(method = "loess") +
+  BLANK(method = "loess") +
   scale_color_viridis_d() +
   scale_fill_viridis_d()
 
@@ -230,12 +229,12 @@ Note BUB, LSC, and UTC are watersheds in TCEF. These are Bubbling (BUB), Lower S
 
 `pivot_wider()` has similar syntax to `pivot_longer()`, but here the important parts are `names_from =` and `values_from =`. In this case, the names come from the Watershed column (which is now a factor), the values come from the Q column.
 
-Use pivot_wider() to make a df called Qdat that has date and Q for each watershed in the so-called "wide" format. See [here](https://r4ds.had.co.nz/tidy-data.html) and [here](https://anvil.works/blog/tidy-data) for information on wide vs long data formats. Note that the second link is a Python article. So we aren't using those packages and we won't in this class. But point being "long" vs. "wide" is relevant in all the programming languages, including Python and R.
+Use pivot_wider() to make a df called Qdat that has date and Q for each watershed in the so-called "wide" format. See [here](https://r4ds.had.co.nz/tidy-data.html) and [here](https://anvil.works/blog/tidy-data) for information on wide vs long data formats. Note that the second link is a Python article. So we aren't using those packages and we won't in this class. But point being "long" vs. "wide" is relevant in all the programming languages, including Python and R.   
 
 ```{r}
 Qdat <- PQ %>% 
   select(-P, -WY) %>% 
-  pivot_wider(names_from = Watershed, values_from = Q)
+  BLANK(names_from = Watershed, values_from = Q)
 view(Qdat)
 ```
 
@@ -266,11 +265,11 @@ for (i in 1:3) { # for all three watersheds
 
 # make a clean looking df with all results from the baseflow separations
 HS_summary <- HS_summary %>% 
-  mutate(mean.qfi = 1 - mean.bfi) %>% # this adds a value for quickflow (stormflow) percentage (1 - baseflow)
+  mutate(mean.qfi = 1 - mean.bfi) %>% # this add a value for quickflow (stormflow) percentage (1 - baseflow)
   rename(Watershed = value)
 
 
-# create long form df for plotting with only quickflow and baseflow and the watershed names
+# create long form for plotting with only quickflow and baseflow and the watershed names
 HS_long <- HS_summary %>%
   select(mean.bfi, mean.qfi, Watershed) %>% # mean.bfi, mean.qfi, Watershed
   pivot_longer(names_to = "key", values_to = "value", -Watershed) # make the long form. Ends up with three columns.
@@ -301,6 +300,7 @@ The example above calculates the hydrograph separation for the entire 16 year ti
 Alter the hydrograph separation code from above to now compute the separation at the daily timestep (ts). And then follow code similar to the RR code to calculate annual mean BFI from the daily data. 
 
 ```{r}
+
 HS_daily <- NULL # preallocate 
 for (i in 1:3) {
   Qbf <- Qdat %>% 
@@ -308,7 +308,7 @@ for (i in 1:3) {
     rename(Q = names(Qdat[(i + 1)]))
   
   bf_filter <- 0.975 # set filter parameter
-  temp <- baseflows(Qbf, bf_filter, n.reflected = 30, ts = "daily") # actual baseflow separation
+  temp <- baseflows(Qbf, bf_filter, n.reflected = 30, ts = BLANK) # actual baseflow separation
   temp1 <- bind_cols(temp, as.tibble(rep(names(Qdat[(i + 1)]), dim(temp)[1]))) # append the watershed name to the bs separation result
   HS_daily <- bind_rows(HS_daily, temp1) # put all bf seps together
 }
@@ -326,22 +326,24 @@ HS_annual <- HS_daily %>%
   # comment out the previous line and uncomment for total baseflow values based on actual runoff
   summarise(sum.bf = sum(bf), sum.Q = sum(Q)) %>% # calculates baseflow totals and runoff totals
   mutate(mean.bfi = sum.bf/sum.Q) # real bfi is total baseflow sum / total runoff
+
 ```
 
 Now we have two dfs with 42 observations for the watersheds, one holding the BFI means (HS_annual), the other the values for P, Q, ET, and RR (PQ_annual). Now we need to put those two together. We can use `right_join()` from `dplyr` to combine the two dfs into a new df called PQ_all. Once you have created PQ_all, make a plot with annual BFI on the y, and annual RR on the x. Color by watershed. And add a trend line with 95 confidence intervals by using stat_smooth. 
 ```{r}
-PQ_all <- right_join(HS_annual, PQ_annual) # combine the dfs
+PQ_all <- BLANK(HS_annual, PQ_annual) # combine the dfs
 
 # plot the data
 bfi_annual_plot <- ggplot(data = PQ_all, aes(x = RR, y = mean.bfi, color = Watershed, fill = Watershed)) + # color determines the line color, fill the confidence band color
   theme_bw(base_size = 15) +
   geom_point(shape=16, size=4, alpha=0.5) + # plot as points
-  stat_smooth(method = "lm", alpha = 0.1) + # plot linear regression with confidence bands
+  stat_smooth(BLANK = "lm", alpha = 0.1) + # plot linear regression with confidence bands
   labs(x = "Annual Runoff Ratio", y = "Annual Baseflow Index") +
   scale_fill_viridis_d() +
   scale_color_viridis_d()
 
 ggplotly(bfi_annual_plot)
+
 ```
 
 **10) (3 pts) Describe the figure you have just created. First, describe the patterns. Next, suggest process-based mechanisms to describe what is happening. Why are there different patterns in the different watersheds? What could control that?**  
@@ -353,18 +355,18 @@ Now, let's get to the correlations. We have just looked at the relationships bet
 
 We will use the R base function `cor.test()` to calculate the correlations. We will use `method = "spearman"` within `cor.test()`. "Spearman" is a rank-based (non-parametric) correlation coefficient and does not assume a normal distribution for the data.  
 
-The `cor.test()` does not work well with the tidyverse functions. We first need to get the data into a wide form.
+The `cor.test()` does not work well with the tidyverse functions. We first need to get the data into a wide form. 
 
 ```{r}
 PQ_wide <- PQ_all %>% 
-  select(-Qsum, -Psum) %>% # remove the columns with Q, P, and ET
-  pivot_wider(names_from="Watershed", values_from="RR") # spread out the data for the watersheds and RRs
+  select(-Qsum, -Psum, -sum.bf, -sum.Q) %>% # remove the columns with Q, and P
+  pivot_wider(names_from = "Watershed", values_from = "RR") # spread out the data for the watersheds and RRs
 
-BUBcor <- cor.test(x = PQ_wide$BUB, y = PQ_wide$mean.bfi, method = "spearman")
+BUBcor <- BLANK(x = PQ_wide$BUB, y = PQ_wide$mean.bfi, method = "spearman")
 BUBcor
-LSCcor <- cor.test(x = PQ_wide$LSC, y = PQ_wide$mean.bfi, method = "spearman")
+LSCcor <- cor.test(x = BLANK, y = PQ_wide$mean.bfi, method = "spearman")
 LSCcor
-UTCcor <- cor.test(x = PQ_wide$UTC, y = PQ_wide$mean.bfi, method = "spearman")
+UTCcor <- cor.test(BLANK)
 UTCcor
 ```
 
